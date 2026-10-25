@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TaskFlow | {{ 'Create account' if mode == 'register' else 'Sign in' }}</title>
+  <style>
+    :root{color-scheme:dark;--bg:#080d18;--surface:#111a2b;--border:#26344c;--text:#edf4ff;--muted:#91a0b8;--green:#65d5ff;--red:#e88b91}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;background:radial-gradient(ellipse at 12% 8%,rgba(36,86,170,.32) 0,transparent 38%),radial-gradient(ellipse at 90% 85%,rgba(0,174,214,.17) 0,transparent 34%),linear-gradient(135deg,#080d18 0%,#0b1323 52%,#080d18 100%);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--text)}
+    .layout{width:min(100%,430px)}.brand{display:flex;align-items:center;justify-content:center;gap:10px;font-size:22px;font-weight:750;letter-spacing:-.6px;margin-bottom:28px}.brand-mark{display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:linear-gradient(115deg,#65d5ff,#7b9dff);color:#07111f;font-size:21px}
+    .card{background:linear-gradient(145deg,rgba(19,30,49,.97),rgba(14,23,39,.97));border:1px solid var(--border);border-radius:22px;padding:34px;box-shadow:0 24px 80px #0005}.eyebrow{font-size:11px;letter-spacing:1.8px;font-weight:750;color:var(--green);margin:0 0 10px}.card h1{font-size:28px;letter-spacing:-.8px;margin:0 0 8px}.sub{color:var(--muted);font-size:14px;line-height:1.6;margin:0 0 28px}
+    label{display:block;font-size:13px;font-weight:650;margin:0 0 17px}input{display:block;width:100%;margin-top:8px;background:rgba(7,13,24,.78);border:1px solid var(--border);border-radius:10px;padding:13px 14px;color:var(--text);font:inherit;outline:none}input:focus{border-color:var(--green);box-shadow:0 0 0 3px #65d5ff20}button{width:100%;border:0;border-radius:10px;background:linear-gradient(115deg,#65d5ff,#7b9dff);color:#07111f;font-weight:750;font-size:14px;padding:13px;cursor:pointer;margin-top:5px}button:hover{filter:brightness(1.06)}
+    .switch{text-align:center;color:var(--muted);font-size:13px;margin:22px 0 0}.switch a{color:var(--green);font-weight:700;text-decoration:none}.message{font-size:13px;padding:11px 12px;border:1px solid #e88b9140;background:#e88b9112;color:var(--red);border-radius:9px;margin:0 0 18px}.hint{font-size:12px;color:var(--muted);margin-top:18px;text-align:center}
+    @media(max-width:480px){.card{padding:25px 21px}.card h1{font-size:25px}}
+  </style>
+</head>
+<body>
+  <main class="layout">
+    <div class="brand"><span class="brand-mark">✦</span> TaskFlow</div>
+    <section class="card">
+      {% if mode == 'register' %}
+        <p class="eyebrow">YOUR WORKSPACE STARTS HERE</p><h1>Create your account</h1><p class="sub">A calmer way to organize projects, tasks, and teamwork.</p>
+      {% else %}
+        <p class="eyebrow">WELCOME BACK</p><h1>Sign in to TaskFlow</h1><p class="sub">Pick up where you left off and keep your work moving.</p>
+      {% endif %}
+      {% for category, message in get_flashed_messages(with_categories=true) %}
+        <div class="message">{{ message }}</div>
+      {% endfor %}
+      <form method="post" autocomplete="on">
+        {% if mode == 'register' %}
+          <label>Your name<input name="name" type="text" maxlength="80" placeholder="e.g. Darshan" autocomplete="name" required></label>
+        {% endif %}
+        <label>Email address<input name="email" type="email" placeholder="you@example.com" autocomplete="email" required></label>
+        <label>Password<input name="password" type="password" minlength="{{ 8 if mode == 'register' else 1 }}" placeholder="{{ 'At least 8 characters' if mode == 'register' else 'Enter your password' }}" autocomplete="{{ 'new-password' if mode == 'register' else 'current-password' }}" required></label>
+        <button type="submit">{{ 'Create account' if mode == 'register' else 'Sign in' }}</button>
+      </form>
+      <p class="switch">{% if mode == 'register' %}Already have an account? <a href="{{ url_for('login') }}">Sign in</a>{% else %}New to TaskFlow? <a href="{{ url_for('register') }}">Create an account</a>{% endif %}</p>
+      <p class="hint">Your tasks and projects are private to your account.</p>
+    </section>
+  </main>
+</body>
+</html>

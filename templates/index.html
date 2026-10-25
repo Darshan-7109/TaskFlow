@@ -1,0 +1,198 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskFlow | Project Management</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="app">
+    <aside class="sidebar">
+        <div class="brand"><span class="brand-icon">✦</span> TaskFlow</div>
+
+        <p class="nav-label">WORKSPACE</p>
+        <button class="nav-item active" data-view="dashboard">▦ &nbsp; Overview</button>
+        <button class="nav-item" data-view="board">▤ &nbsp; My Tasks</button>
+        <button class="nav-item" data-view="projects">◫ &nbsp; Projects</button>
+        <button class="nav-item" data-view="team">♙ &nbsp; Team Members</button>
+
+        <div class="sidebar-bottom" id="sidebar-profile">
+            <div class="profile-avatar" id="profile-avatar">U</div>
+            <div class="profile-copy"><strong id="profile-name">Loading...</strong><small>TaskFlow Member</small></div>
+            <span class="online-dot"></span>
+        </div>
+        <form action="/logout" method="post" class="sidebar-logout-form">
+            <button type="submit" class="nav-item logout-button" id="logout-btn">↪ &nbsp; Log out</button>
+        </form>
+    </aside>
+
+    <main class="main">
+        <header class="topbar">
+            <div class="breadcrumb">Workspace <span>/</span> <strong id="page-name">Overview</strong></div>
+            <button class="primary-btn" id="add-task-btn">＋ New Task</button>
+        </header>
+
+        <section class="page" id="dashboard-view">
+            <div class="welcome-row">
+                <div>
+                    <p class="eyebrow">YOUR WORKSPACE</p>
+                    <h1>Good evening 👋</h1>
+                    <p class="muted">Here's what's happening with your projects today.</p>
+                </div>
+                <div class="date-chip" id="today"></div>
+            </div>
+
+            <div class="stats-grid">
+                <article class="stat-card">
+                    <div class="stat-top"><span>Total Tasks</span><span class="stat-icon purple">▤</span></div>
+                    <div class="stat-number" id="total">0</div>
+                    <p class="stat-note">Across all projects</p>
+                </article>
+                <article class="stat-card">
+                    <div class="stat-top"><span>In Progress</span><span class="stat-icon blue">◷</span></div>
+                    <div class="stat-number" id="in-progress">0</div>
+                    <p class="stat-note">Tasks being worked on</p>
+                </article>
+                <article class="stat-card">
+                    <div class="stat-top"><span>Completed</span><span class="stat-icon green">✓</span></div>
+                    <div class="stat-number" id="completed">0</div>
+                    <p class="stat-note">Tasks finished</p>
+                </article>
+                <article class="stat-card">
+                    <div class="stat-top"><span>Overdue</span><span class="stat-icon orange">!</span></div>
+                    <div class="stat-number" id="overdue">0</div>
+                    <p class="stat-note">Past their deadline</p>
+                </article>
+            </div>
+
+            <div class="content-grid">
+                <section class="panel">
+                    <div class="panel-heading">
+                        <div><h2>Task Overview</h2><p class="muted">Your team's current workload</p></div>
+                        <button class="text-btn" data-goto="board">View board →</button>
+                    </div>
+                    <div class="board-preview" id="board-preview"></div>
+                </section>
+
+                <section class="panel progress-panel">
+                    <div class="panel-heading">
+                        <div><h2>Overall Progress</h2><p class="muted">Completion across all tasks</p></div>
+                    </div>
+                    <div class="progress-ring" id="progress-ring">
+                        <div><strong id="completion">0%</strong><span>completed</span></div>
+                    </div>
+                    <div class="progress-legend">
+                        <div><span class="legend-dot done-dot"></span> Completed <strong id="legend-done">0</strong></div>
+                        <div><span class="legend-dot progress-dot"></span> In Progress <strong id="legend-progress">0</strong></div>
+                        <div><span class="legend-dot todo-dot"></span> To Do <strong id="legend-todo">0</strong></div>
+                    </div>
+                </section>
+            </div>
+
+            <section class="panel projects-panel">
+                <div class="panel-heading">
+                    <div><h2>Your Projects</h2><p class="muted">Track progress across your workspace</p></div>
+                    <button class="text-btn" data-goto="projects">All projects →</button>
+                </div>
+                <div id="project-preview" class="project-grid"></div>
+            </section>
+        </section>
+
+        <section class="page hidden" id="board-view">
+            <div class="section-title">
+                <div><h1>My Tasks</h1><p class="muted">Organize work and track every task.</p></div>
+                <button class="primary-btn" id="board-add-btn">＋ New Task</button>
+            </div>
+            <div class="filter-row">
+                <input id="task-search" type="search" placeholder="⌕  Search tasks...">
+                <select id="project-filter"><option value="">All projects</option></select>
+                <select id="priority-filter">
+                    <option value="">All priorities</option>
+                    <option>High</option><option>Medium</option><option>Low</option>
+                </select>
+            </div>
+            <div class="kanban" id="kanban"></div>
+        </section>
+
+        <section class="page hidden" id="projects-view">
+            <div class="section-title">
+                <div><h1>Projects</h1><p class="muted">Everything your team is working on.</p></div>
+                <button class="primary-btn" id="add-project-btn">＋ New Project</button>
+            </div>
+            <div id="all-projects" class="project-grid"></div>
+        </section>
+
+        <section class="page hidden" id="team-view">
+            <div class="section-title">
+                <div><h1>Team Members</h1><p class="muted">Meet the people behind the projects.</p></div>
+                <button class="primary-btn" id="add-member-btn">＋ Add Member</button>
+            </div>
+            <div id="team-grid" class="team-grid"></div>
+        </section>
+    </main>
+</div>
+
+<div class="modal-backdrop hidden" id="modal">
+    <form class="modal" id="task-form">
+        <div class="modal-heading">
+            <div><p class="eyebrow">TASK MANAGEMENT</p><h2 id="modal-title">Create a task</h2></div>
+            <button type="button" class="close-btn" id="close-modal">×</button>
+        </div>
+        <input type="hidden" id="task-id">
+        <label>Task title<input id="task-title" required maxlength="150" placeholder="e.g. Design landing page"></label>
+        <label>Description<textarea id="task-description" rows="3" placeholder="What needs to be done?"></textarea></label>
+        <div class="form-row">
+            <label>Project<select id="task-project"></select></label>
+            <label>Assignee<select id="task-assignee"></select></label>
+        </div>
+        <div class="form-row">
+            <label>Priority<select id="task-priority"><option>Low</option><option selected>Medium</option><option>High</option></select></label>
+            <label>Status<select id="task-status"><option>To Do</option><option>In Progress</option><option>Done</option></select></label>
+        </div>
+        <label>Due date<input id="task-due" type="date"></label>
+        <p class="form-error" id="form-error"></p>
+        <div class="modal-actions">
+            <button type="button" class="secondary-btn" id="cancel-modal">Cancel</button>
+            <button type="submit" class="primary-btn" id="save-task-btn">Create Task</button>
+        </div>
+    </form>
+</div>
+
+
+<div class="modal-backdrop hidden" id="entity-modal" role="dialog" aria-modal="true" aria-labelledby="entity-modal-title">
+    <form class="modal" id="entity-form">
+        <div class="modal-heading">
+            <div><p class="eyebrow" id="entity-eyebrow">WORKSPACE MANAGEMENT</p><h2 id="entity-modal-title">Create project</h2></div>
+            <button type="button" class="close-btn" id="close-entity-modal" aria-label="Close dialog">×</button>
+        </div>
+        <label id="entity-name-label">Project name<input id="entity-name" required maxlength="100" placeholder="e.g. Website redesign"></label>
+        <label id="entity-description-label">Description<textarea id="entity-description" rows="3" maxlength="500" placeholder="What is this project about?"></textarea></label>
+        <p class="form-error" id="entity-form-error" role="alert"></p>
+        <div class="modal-actions">
+            <button type="button" class="secondary-btn" id="cancel-entity-modal">Cancel</button>
+            <button type="submit" class="primary-btn" id="save-entity-btn">Create project</button>
+        </div>
+    </form>
+</div>
+
+<div class="modal-backdrop hidden" id="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+    <section class="modal confirm-modal-card">
+        <div class="modal-heading">
+            <div><p class="eyebrow">PLEASE CONFIRM</p><h2 id="confirm-title">Delete item?</h2></div>
+            <button type="button" class="close-btn" id="close-confirm-modal" aria-label="Close dialog">×</button>
+        </div>
+        <p class="muted confirm-message" id="confirm-message">This action cannot be undone.</p>
+        <p class="form-error" id="confirm-error" role="alert"></p>
+        <div class="modal-actions">
+            <button type="button" class="secondary-btn" id="cancel-confirm">Cancel</button>
+            <button type="button" class="danger-btn" id="confirm-delete-btn">Delete</button>
+        </div>
+    </section>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="/static/script.js"></script>
+</body>
+</html>

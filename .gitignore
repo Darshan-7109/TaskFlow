@@ -1,0 +1,19 @@
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Secrets
+.env
+
+# Local database and user data
+taskflow.db
+taskflow.db-journal
+taskflow.db-wal
+taskflow.db-shm
+
+# OS files
+.DS_Store
+Thumbs.db
